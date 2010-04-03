@@ -1,0 +1,69 @@
+- hierarchical
+- tags
+- closed/not closed
+(- user-definable properties
+ - key-value pairs with user-defined values)
+- vcs integration
+- save dates
+- descriptions
+- comments
+- actions:
+ - add
+ - remove
+ - close
+ - add dep
+ - remove dep
+ - add comment
+ - open
+ - add tag
+ - remove tag
+ - draw graph
+ - list
+ - sort
+ - filter
+ (- add property class
+ - delete property class
+ - add property
+ - delete property)
+
+internals:
+- saves db into a dir
+ - one file / issue
+
+workflow:
+$ nix config --name "antti"
+$ nix init
+Initialized in .nix
+$ nix add "improve ai" -m "ai should be improved" # title -m comment
+Added "improve ai"
+$ nix add "ai should predict position" -m "ai should predict player position by taking velocity into account"
+Added "ai should predict position"
+$ nix dep "improve ai" "ai should predict" # match ticket title
+Added dependency of "improve ai" to "ai should predict position"
+$ git add .nix
+$ git commit -m "updated nix"
+$ nix comment "improve ai" "i'm on it"
+$ nix set "improve ai" "category" "too easy" # set overwrites previous property
+$ nix set "ai should"  "category" "too easy"
+$ nix set "ai should"  "type" "feature"
+$ nix tag "ai should"  "physics"
+$ nix close "ai should"
+$ nix list
+---
+improve ai (03.04.2010 13:48:00 antti)
+open
+category-too easy:type-feature
+
+ai should be improved
+
+comment (03.04.2010 13:48:20 antti):
+i'm on it
+---
+ai should predict position (03.04.2010 13:48:10 antti)
+closed
+category-too easy
+physics
+
+ai should predict player position by taking velocity into account
+---
+
