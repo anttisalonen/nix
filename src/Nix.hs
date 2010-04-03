@@ -11,6 +11,7 @@ import Common
 import Dep
 import Comment
 import Tag
+import SetProp
 
 commandHandlers :: [(Command, [String] -> IO ())]
 commandHandlers =
@@ -24,7 +25,6 @@ commandHandlers =
   , (Close, handleClose)
   , (List, handleList)]
 
-handleSetProp = error "set not supported yet"
 handleClose = error "close not supported yet"
 handleList = error "list not supported yet"
 
