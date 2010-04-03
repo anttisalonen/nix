@@ -2,8 +2,19 @@ module Main
 where
 
 import Data.List (intercalate)
+import Control.Monad (liftM)
+import System.Directory
 import System (getArgs, getProgName)
 import System.Console.GetOpt
+import Control.Exception (throwIO)
+import System.IO.Error (mkIOError, doesNotExistErrorType)
+import Prelude hiding (catch)
+import qualified Data.ByteString.Char8 as Str
+
+safeRead :: (Read a) => String -> Maybe a
+safeRead s = case reads s of
+              [(n, _)] -> Just n
+              _        -> Nothing
 
 data Command = Config
              | Init
@@ -52,16 +63,49 @@ setConfigName s c = c{configName = s}
 
 defaultConfigOptions = ConfigOptions "unknown"
 
+appName = "nix"
+
+globalconfigfile :: IO String
+globalconfigfile = do
+  let globalconfigfilebase = "config"
+  appdir <- getAppUserDataDirectory appName
+  createDirectoryIfMissing False appdir
+  return $ appdir ++ "/" ++ globalconfigfilebase
+
+setGlobalName :: String -> IO ()
+setGlobalName n = do
+  fpath <- globalconfigfile
+  writeFile fpath n
+
+-- throws if not found
+readGlobalName :: IO String
+readGlobalName = 
+  do fpath <- globalconfigfile
+     exists <- doesFileExist fpath
+
+     if exists
+       then do
+         contents <- liftM Str.unpack $ Str.readFile fpath
+         case safeRead contents of
+           Just n  -> return n
+           Nothing -> flipOut fpath
+       else flipOut fpath
+
+  where flipOut fpath = throwIO $ 
+          mkIOError doesNotExistErrorType 
+             ("Could not read global configuration file - run nix init first.") 
+             Nothing (Just fpath)
+
 handleConfig args = do
   let (actions, nonOpts, msgs) = getOpt Permute configOptions args
   if null nonOpts && null msgs
     then do
       let opts = foldl (flip ($)) defaultConfigOptions actions
       putStrLn $ "Your name: " ++ (configName opts)
+      setGlobalName (configName opts)
     else do
-      if not (null msgs)
-        then mapM_ putStrLn msgs
-        else usage
+      mapM_ putStrLn msgs
+      putStrLn $ usageInfo "nix config" configOptions 
   
 handleInit = error "init not supported yet"
 handleAdd = error "add not supported yet"
