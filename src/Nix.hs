@@ -109,8 +109,13 @@ handleConfig args = do
     else do
       mapM_ putStrLn msgs
       putStrLn $ usageInfo "nix config" configOptions 
-  
-handleInit = error "init not supported yet"
+
+nixdirname = ".nix"  
+
+handleInit _ = do
+  createDirectoryIfMissing False nixdirname
+  putStrLn "Created directory .nix"
+
 handleAdd = error "add not supported yet"
 handleDep = error "dep not supported yet"
 handleComment = error "comment not supported yet"
