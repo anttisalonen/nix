@@ -3,6 +3,7 @@ where
 
 import Data.List (intercalate)
 import Control.Monad (liftM)
+import System.Exit
 import System.Directory
 import System (getArgs, getProgName)
 import System.Console.GetOpt
@@ -97,18 +98,30 @@ readGlobalName =
              Nothing (Just fpath)
 
 handleConfig args = do
-  let (actions, nonOpts, msgs) = getOpt Permute configOptions args
+  opts <- doArgs configOptions defaultConfigOptions [(\o -> not (null (configName o)))] "config" args
+  putStrLn $ "Your name: " ++ (configName opts)
+  setGlobalName (configName opts)
+
+isvalid :: [a -> Bool] -> a -> [Bool]
+isvalid []     _ = []
+isvalid (f:fs) v = f v : isvalid fs v
+
+doArgs
+  :: [OptDescr (a -> a)] -- optdescr
+  -> a                   -- default data
+  -> [a -> Bool]         -- validation functions on parsed options
+  -> String              -- name of command for error message
+  -> [String]            -- cmd line arguments
+  -> IO a                -- parsed data (function exits on failure)
+doArgs opts defopts validfuncs cmd args = do
+  let (actions, nonOpts, msgs) = getOpt Permute opts args
   if null nonOpts && null msgs
     then do
-      let opts = foldl (flip ($)) defaultConfigOptions actions
-      if (not (null (configName opts)))
-        then do
-          putStrLn $ "Your name: " ++ (configName opts)
-          setGlobalName (configName opts)
-        else putStrLn $ usageInfo "nix config" configOptions 
-    else do
-      mapM_ putStrLn msgs
-      putStrLn $ usageInfo "nix config" configOptions 
+      let finalopts = foldl (flip ($)) defopts actions
+      if and $ isvalid validfuncs finalopts
+        then return finalopts
+        else putStrLn (usageInfo ("nix " ++ cmd) opts) >> exitWith (ExitFailure 1)
+    else putStrLn (usageInfo ("nix " ++ cmd) opts) >> exitWith (ExitFailure 1)
 
 nixdirname = ".nix"  
 
@@ -117,6 +130,7 @@ handleInit _ = do
   putStrLn "Created directory .nix"
 
 handleAdd = error "add not supported yet"
+
 handleDep = error "dep not supported yet"
 handleComment = error "comment not supported yet"
 handleSetProp = error "set not supported yet"
