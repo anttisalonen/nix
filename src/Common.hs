@@ -70,7 +70,11 @@ checkIsInit = do
        ("Could not find nix directory - run nix init first.") 
        Nothing (Just nixdirname)
 
-issueFilePath :: String -> String
-issueFilePath t = nixdirname ++ "/" ++ t
-
+-- throws error if does not exist.
+checkFileExists f = do
+  exists <- doesFileExist f
+  when (not exists) $ throwIO $ 
+    mkIOError doesNotExistErrorType 
+       ""
+       Nothing (Just f)
 

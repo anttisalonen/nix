@@ -8,6 +8,7 @@ import Prelude hiding (catch)
 import Add
 import Config
 import Common
+import Dep
 
 commandHandlers :: [(Command, [String] -> IO ())]
 commandHandlers =
@@ -21,7 +22,6 @@ commandHandlers =
   , (Close, handleClose)
   , (List, handleList)]
 
-handleDep = error "dep not supported yet"
 handleComment = error "comment not supported yet"
 handleSetProp = error "set not supported yet"
 handleTag = error "tag not supported yet"
