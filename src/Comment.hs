@@ -1,21 +1,14 @@
 module Comment
 where
 
-import System.Exit
-
 import Common
 import Ticket
 
-comment :: String -> String -> IO ()
-comment tick comm = do
-  putStrLn $ "Comment to: " ++ tick ++ " - " ++ comm ++ "."
+comment :: String -> [String] -> IO ()
+comment tick comms = do
+  putStrLn $ "Comment to: " ++ tick ++ " - " ++ (show comms) ++ "."
   from <- loadTicket tick
-  saveTicket (addComment comm from)
+  saveTicket (addComments comms from)
 
-handleComment args = do
-  checkIsInit
-  (_, nonopts) <- doArgs [] undefined [] "comment" args True
-  if length nonopts /= 2
-    then putStrLn "Usage: comment ticket-name comment" >> exitWith (ExitFailure 1)
-    else comment (head nonopts) (nonopts !! 1)
+handleComment args = paramList comment args "comment" "Usage: comment ticket-name comment"
 

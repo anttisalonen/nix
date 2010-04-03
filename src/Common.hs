@@ -78,3 +78,10 @@ checkFileExists f = do
        ""
        Nothing (Just f)
 
+paramList f args cmd usagemsg = do
+  checkIsInit
+  (_, nonopts) <- doArgs [] undefined [] cmd args True
+  if length nonopts < 2
+    then putStrLn usagemsg >> exitWith (ExitFailure 1)
+    else f (head nonopts) (tail nonopts)
+

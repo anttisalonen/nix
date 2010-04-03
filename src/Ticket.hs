@@ -30,11 +30,20 @@ addDep d t = t{deps = (d:(deps t))}
 addComment :: String -> Ticket -> Ticket
 addComment d t = t{comments = (d:(comments t))}
 
+addComments :: [String] -> Ticket -> Ticket
+addComments ds t = t{comments = (ds ++ comments t)}
+
 addTag :: String -> Ticket -> Ticket
 addTag d t = t{tags = (d:(tags t))}
 
+addTags :: [String] -> Ticket -> Ticket
+addTags ds t = t{tags = (ds ++ tags t)}
+
 addCategory :: String -> String -> Ticket -> Ticket
 addCategory k a t = t{categories = M.insert k a (categories t)}
+
+addCategories :: [(String, String)] -> Ticket -> Ticket
+addCategories vs t = t{categories = M.union (M.fromSeq vs) (categories t)}
 
 ticketExists :: String -> IO Bool
 ticketExists t = doesFileExist (ticketFilePath t)
