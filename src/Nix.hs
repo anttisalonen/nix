@@ -9,6 +9,7 @@ import Add
 import Config
 import Common
 import Dep
+import Comment
 
 commandHandlers :: [(Command, [String] -> IO ())]
 commandHandlers =
@@ -22,7 +23,6 @@ commandHandlers =
   , (Close, handleClose)
   , (List, handleList)]
 
-handleComment = error "comment not supported yet"
 handleSetProp = error "set not supported yet"
 handleTag = error "tag not supported yet"
 handleClose = error "close not supported yet"
