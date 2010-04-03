@@ -15,6 +15,7 @@ ticketFilePath t = nixdirname ++ "/" ++ t
 
 data Ticket = Ticket { title      :: String
                      , message    :: String
+                     , opened     :: Bool
                      , deps       :: [String]
                      , comments   :: [String]
                      , tags       :: [String]
@@ -51,8 +52,11 @@ ticketExists t = doesFileExist (ticketFilePath t)
 checkTicketExists :: String -> IO ()
 checkTicketExists f = checkFileExists (ticketFilePath f)
 
+setOpen :: Bool -> Ticket -> Ticket
+setOpen v t = t{opened = v}
+
 newTicket :: String -> String -> Ticket
-newTicket t m = Ticket t m [] [] [] (M.empty)
+newTicket t m = Ticket t m True [] [] [] (M.empty)
 
 -- overwrites.
 saveTicket :: Ticket -> IO ()
