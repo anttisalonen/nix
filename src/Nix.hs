@@ -3,6 +3,7 @@ where
 
 import Data.List (intercalate)
 import System (getArgs, getProgName)
+import System.Console.GetOpt
 
 data Command = Config
              | Init
@@ -27,7 +28,7 @@ commands =
   , ("close",   Close)
   , ("list",    List)]
 
-commandHandlers :: [(Command, IO ())]
+commandHandlers :: [(Command, [String] -> IO ())]
 commandHandlers =
    [(Config, handleConfig)
   , (Init, handleInit)
@@ -39,7 +40,29 @@ commandHandlers =
   , (Close, handleClose)
   , (List, handleList)]
 
-handleConfig = error "config not supported yet"
+configOptions :: [(OptDescr (ConfigOptions -> ConfigOptions))]
+configOptions = [
+    Option ['n'] ["name"] (ReqArg setConfigName "name") "your name"
+  ]
+
+data ConfigOptions = ConfigOptions { configName :: String }
+
+setConfigName :: String -> ConfigOptions -> ConfigOptions
+setConfigName s c = c{configName = s}
+
+defaultConfigOptions = ConfigOptions "unknown"
+
+handleConfig args = do
+  let (actions, nonOpts, msgs) = getOpt Permute configOptions args
+  if null nonOpts && null msgs
+    then do
+      let opts = foldl (flip ($)) defaultConfigOptions actions
+      putStrLn $ "Your name: " ++ (configName opts)
+    else do
+      if not (null msgs)
+        then mapM_ putStrLn msgs
+        else usage
+  
 handleInit = error "init not supported yet"
 handleAdd = error "add not supported yet"
 handleDep = error "dep not supported yet"
@@ -49,20 +72,6 @@ handleTag = error "tag not supported yet"
 handleClose = error "close not supported yet"
 handleList = error "list not supported yet"
 
-getCmd :: IO (Maybe Command)
-getCmd = do
-  args <- getArgs
-  return $ if null args
-             then Nothing
-             else lookup (args !! 0) commands
-
-doCmd :: Command -> IO ()
-doCmd c = 
-  case lookup c commandHandlers of
-    Just h  -> h
-    Nothing -> error "No handler setup"
-
--- won't return
 usage :: IO ()
 usage = do
   n <- getProgName
@@ -72,7 +81,14 @@ usage = do
      map fst commands
 
 main = do
-  mcmd <- getCmd
+  args <- getArgs
+  let mcmd = if null args
+               then Nothing
+               else lookup (head args) commands
   case mcmd of
     Nothing -> usage
-    Just c  -> doCmd c
+    Just c  -> do
+      case lookup c commandHandlers of
+        Just h  -> h (tail args)
+        Nothing -> error "No handler setup"
+
