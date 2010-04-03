@@ -61,7 +61,7 @@ data ConfigOptions = ConfigOptions { configName :: String }
 setConfigName :: String -> ConfigOptions -> ConfigOptions
 setConfigName s c = c{configName = s}
 
-defaultConfigOptions = ConfigOptions "unknown"
+defaultConfigOptions = ConfigOptions ""
 
 appName = "nix"
 
@@ -101,8 +101,11 @@ handleConfig args = do
   if null nonOpts && null msgs
     then do
       let opts = foldl (flip ($)) defaultConfigOptions actions
-      putStrLn $ "Your name: " ++ (configName opts)
-      setGlobalName (configName opts)
+      if (not (null (configName opts)))
+        then do
+          putStrLn $ "Your name: " ++ (configName opts)
+          setGlobalName (configName opts)
+        else putStrLn $ usageInfo "nix config" configOptions 
     else do
       mapM_ putStrLn msgs
       putStrLn $ usageInfo "nix config" configOptions 
