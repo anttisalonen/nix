@@ -11,5 +11,5 @@ dep fromtitle totitles = do
   from <- loadTicket fromtitle
   saveTicket (modDeps (totitles ++) from)
 
-handleDep args = paramList dep args "dep" "Usage: dep dependency-from dependency-to ..."
+handleDep args = paramList dep args "dep" "Usage: dep ticketname depends-on ..."
 
