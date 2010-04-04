@@ -38,7 +38,7 @@ usageText = intercalate "\n" $
 
 main = do
   args <- getArgs
-  handleDefaultArgs args usageText []
+  handleDefaultArgs (take 1 args) usageText []
   let mcmd = if null args
                then Nothing
                else lookup (head args) commands
