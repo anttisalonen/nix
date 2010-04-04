@@ -11,8 +11,8 @@ import qualified Data.Edison.Assoc.AssocList as M
 
 import Ticket
 import Common
+import Filter
 
-type TicketFilter = Ticket -> Bool
 type TicketSorting = Ticket -> Ticket -> Ordering
 type TicketShow = [Ticket] -> String
 
@@ -33,25 +33,17 @@ setReversed s c = c{reversed = s}
 setFormatting :: TicketShow -> ListOptions -> ListOptions
 setFormatting s c = c{formatting = s}
 
-getCategories :: String -> ListOptions -> ListOptions
-getCategories n = 
-  let (c, v') = span (/= '=') n
-  in addFilter (\t -> getCategoryValue c t == (drop 1 v'))
-
-getTag :: String -> ListOptions -> ListOptions
-getTag n = addFilter (hasTag n)
-
 defaultListOptions = ListOptions [] (compare `on` title) False displayMany
 
 listOptions :: [(OptDescr (ListOptions -> ListOptions))]
 listOptions = [
     Option ['r'] ["reverse"]  (NoArg  (setReversed True))                     "reverse ordering"
-  , Option ['c'] ["closed"]   (NoArg  (addFilter (not . opened)))             "only include closed tickets"
-  , Option ['o'] ["open"]     (NoArg  (addFilter opened))                     "only include open tickets"
+  , Option ['c'] ["closed"]   (NoArg  (addFilter closedF))                    "only include closed tickets"
+  , Option ['o'] ["open"]     (NoArg  (addFilter openF))                      "only include open tickets"
   , Option ['d'] ["date"]     (NoArg  (setSorting (compare `on` createtime))) "sort on creation time"
   , Option ['a'] ["alpha"]    (NoArg  (setSorting (compare `on` title)))      "sort on titles (alphabetically) (default)"
-  , Option ['C'] ["category"] (ReqArg getCategories "cat=val")                "filter by category (\"-c cat=val\")"
-  , Option ['t'] ["tag"]      (ReqArg getTag "tag")                           "filter by tag"
+  , Option ['C'] ["category"] (ReqArg (getCategories addFilter) "cat=val")    "filter by category (\"-c cat=val\")"
+  , Option ['t'] ["tag"]      (ReqArg (getTag addFilter) "tag")               "filter by tag"
   , Option ['s'] ["short"]    (NoArg  (setFormatting displayManyShort))       "short formatting of tickets"
   , Option ['l'] ["long"]     (NoArg  (setFormatting displayMany))            "long formatting of tickets (default)"
   ]
@@ -59,10 +51,6 @@ listOptions = [
 handleList args = do
   (opts, _) <- doArgs listOptions defaultListOptions [] "list" args False
   list opts
-
-filterAll :: [a -> Bool] -> [a] -> [a]
-filterAll []     xs = xs
-filterAll (f:fs) xs = filterAll fs (filter f xs)
 
 list :: ListOptions -> IO ()
 list opts = do
