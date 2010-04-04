@@ -17,7 +17,7 @@ import Utils
 ticketFilePath :: String -> String
 ticketFilePath t = nixdirname </> t
 
-type Comment = (String, String, ZonedTime)
+type Comment = (String, String, UTCTime)
 
 data Ticket = Ticket { title      :: String
                      , message    :: String
@@ -25,7 +25,7 @@ data Ticket = Ticket { title      :: String
                      , deps       :: [String]
                      , comments   :: [Comment]
                      , tags       :: [String]
-                     , createtime :: ZonedTime
+                     , createtime :: UTCTime
                      , creator    :: String
                      , categories :: M.FM String String }
   deriving (Show, Read)
@@ -45,8 +45,8 @@ addComments ds t = do
   auth <- getUserName
   return $ t{comments = ((zip3 ds (repeat auth) (repeat ct)) ++ comments t)}
 
-currTime :: IO ZonedTime
-currTime = getZonedTime
+currTime :: IO UTCTime
+currTime = getCurrentTime
 
 addTag :: String -> Ticket -> Ticket
 addTag d t = t{tags = (d:(tags t))}
@@ -59,6 +59,13 @@ addCategory k a t = t{categories = M.insert k a (categories t)}
 
 addCategories :: [(String, String)] -> Ticket -> Ticket
 addCategories vs t = t{categories = M.union (M.fromSeq vs) (categories t)}
+
+-- returns "" if not found.
+getCategoryValue :: String -> Ticket -> String
+getCategoryValue c t = M.lookupWithDefault "" c (categories t)
+
+hasTag :: String -> Ticket -> Bool
+hasTag s t = s `elem` tags t
 
 ticketExists :: String -> IO Bool
 ticketExists t = doesFileExist (ticketFilePath t)
