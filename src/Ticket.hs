@@ -20,7 +20,7 @@ ticketFilePath t = nixdirname </> t
 type Comment = (String, String, UTCTime)
 
 data Ticket = Ticket { title      :: String
-                     , message    :: String
+                     , descr      :: String
                      , opened     :: Bool
                      , deps       :: [String]
                      , comments   :: [Comment]
@@ -35,6 +35,9 @@ modDeps f t = t{deps = f (deps t)}
 
 addDep :: String -> Ticket -> Ticket
 addDep d t = t{deps = (d:(deps t))}
+
+setDescr :: String -> Ticket -> Ticket
+setDescr d t = t{descr = d}
 
 addComment :: String -> Ticket -> IO Ticket
 addComment d = addComments [d]

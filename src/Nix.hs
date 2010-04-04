@@ -16,6 +16,7 @@ import SetProp
 import Close
 import List
 import Remove
+import Descr
 
 commands :: [(String, (String, [String] -> IO ()))]
 commands = 
@@ -23,6 +24,7 @@ commands =
   , ("init",    ("initialize nix in current directory", handleInit))
   , ("add",     ("add a ticket", handleAdd))
   , ("remove",  ("remove a ticket", handleRemove))
+  , ("descr",   ("change the description of a ticket", handleDescr))
   , ("dep",     ("add a dependency between tickets", handleDep))
   , ("comment", ("add a comment to a ticket", handleComment))
   , ("set",     ("set a property of a ticket", handleSetProp))

@@ -98,6 +98,6 @@ display t = intercalate "\n" $ filter (/= "")
   , displayOpen (opened t)
   , displayCategories (categories t) 
   , displayTags (tags t) 
-  , message t
+  , descr t
   , displayComments (comments t) ]
 
