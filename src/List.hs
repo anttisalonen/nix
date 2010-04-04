@@ -12,7 +12,7 @@ import qualified Data.Edison.Assoc.AssocList as M
 import Ticket
 
 list :: IO ()
-list = allTickets >>= putStr . displayMany . sortBy (compare `on` title)
+list = allTickets >>= putStrLn . displayMany . sortBy (compare `on` title)
 
 handleList _ = list
 
@@ -24,7 +24,7 @@ displayCategories :: M.FM String String -> String
 displayCategories = intercalate ":" . M.elements . M.mapWithKey (\k a -> printf "%s-%s" k a)
 
 displayMany :: [Ticket] -> String
-displayMany ts = "---\n" ++ intercalate "---\n" (map display ts)
+displayMany ts = "---\n" ++ intercalate "\n---\n" (map display ts)
 
 displayComments :: [Comment] -> String
 displayComments = concatMap (\(c, a, z) -> printf "comment (%s %s):\n%s\n" a (displayTime z) c)
@@ -33,7 +33,7 @@ displayTime :: ZonedTime -> String
 displayTime = formatTime defaultTimeLocale rfc822DateFormat
 
 display :: Ticket -> String
-display t = intercalate "\n"
+display t = intercalate "\n" $ filter (/= "")
   [ printf "%s (%s %s)" (title t) (displayTime $ createtime t) (creator t)
   , displayOpen (opened t)
   , displayCategories (categories t) 
