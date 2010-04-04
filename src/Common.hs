@@ -21,6 +21,7 @@ doArgs
   -> Bool                -- whether nonopts are allowed
   -> IO (a, [String])    -- parsed data and messages (function exits on failure)
 doArgs opts defopts validfuncs cmd args allownonopts = do
+  handleDefaultArgs args cmd opts
   let (actions, nonOpts, msgs) = getOpt Permute opts args
   if (null nonOpts || allownonopts) && null msgs
     then do
@@ -35,6 +36,10 @@ nixdirname = ".nix"
 handleInit _ = do
   createDirectoryIfMissing False nixdirname
   putStrLn $ "Created directory " ++ nixdirname
+
+-- exits.
+handleDefaultArgs args cmd opts = do
+  when ("--help" `elem` args || "-h" `elem` args) $ cmdUsage cmd opts
 
 -- exits.
 cmdUsage cmd opts = putStrLn (usageInfo ("nix " ++ cmd) opts) >> exitWith (ExitFailure 1)

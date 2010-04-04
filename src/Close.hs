@@ -2,6 +2,7 @@ module Close
 where
 
 import Ticket
+import Common
 
 close :: [String] -> IO ()
 close ticks = do
@@ -10,5 +11,7 @@ close ticks = do
   let froms' = map (setOpen False) froms
   mapM_ saveTicket froms'
 
-handleClose args = close args
+handleClose args = do
+  handleDefaultArgs args "close ticketname ... - closes tickets" []
+  close args
 
