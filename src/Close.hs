@@ -2,16 +2,15 @@ module Close
 where
 
 import Ticket
-import Common
+import Helpers
 
-close :: [String] -> IO ()
+close :: [Ticket] -> IO ()
 close ticks = do
-  putStrLn $ "close: " ++ show ticks ++ "."
-  froms <- mapM loadTicket ticks
-  let froms' = map (setOpen False) froms
-  mapM_ saveTicket froms'
+  putStrLn $ "close: " ++ show (map title ticks) ++ "."
+  let ticks' = map (setOpen False) ticks
+  mapM_ saveTicket ticks'
 
 handleClose args = do
-  handleDefaultArgs args "close ticketname ... - closes tickets" []
-  close args
+  ts <- loadArgsAsTickets args "close ticketname ... - closes tickets"
+  close ts
 

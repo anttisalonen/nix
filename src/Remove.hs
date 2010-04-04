@@ -4,10 +4,11 @@ where
 import Control.Monad
 
 import Ticket
-import Common
+import Helpers
 
 handleRemove args = do
-  handleDefaultArgs args "remove ticketname ... - removes tickets" []
-  founds <- mapM deleteTicket args
-  forM_ (zip args founds) 
-    (\(t, f) -> putStrLn $ if f then "Removed ticket \"" ++ t ++ "\"." else "Ticket \"" ++ t ++ "\" not found.")
+  _ <- loadArgsAsTickets args "remove ticketname ... - removes tickets"
+  mapM_ deleteTicket args
+  forM_ args
+    (\t -> putStrLn $ "Removed ticket \"" ++ t ++ "\".")
+

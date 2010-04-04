@@ -1,18 +1,17 @@
 module SetProp
 where
 
-import Common
+import Helpers
 import Ticket
 
 toTwo :: [a] -> [(a, a)]
 toTwo (a:b:xs) = (a,b):toTwo xs
 toTwo _        = []
 
-setProp :: String -> [String] -> IO ()
+setProp :: Ticket -> [String] -> IO ()
 setProp tick vals = do
-  putStrLn $ "tag to: " ++ tick ++ " - " ++ (show vals) ++ "."
-  from <- loadTicket tick
-  saveTicket (addCategories (toTwo vals) from)
+  putStrLn $ "property to: " ++ title tick ++ " - " ++ (show vals) ++ "."
+  saveTicket (addCategories (toTwo vals) tick)
 
 handleSetProp args = paramList setProp args "set" "Usage: set ticket-name category-class category"
 

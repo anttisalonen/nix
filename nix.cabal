@@ -19,7 +19,8 @@ Executable nix
                    EdisonCore>=1.2.0.0,
                    old-locale>=1.0.0.0,
                    time>=1.1.0,
-                   filepath>=1.1.0.0
+                   filepath>=1.1.0.0,
+                   Glob>=0.5
   Main-is:         Nix.hs
   Hs-Source-Dirs:  src
   Ghc-options:     -Wall -fno-warn-missing-signatures

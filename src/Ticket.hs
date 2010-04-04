@@ -3,10 +3,11 @@ where
 
 import Control.Monad
 import System.Directory
-import System.IO.Error (mkIOError, userErrorType)
+import System.IO.Error (mkIOError, doesNotExistErrorType, userErrorType)
 import Control.Exception (throwIO)
 import Data.Time
 import System.FilePath
+import System.FilePath.Glob
 
 import qualified Data.Edison.Assoc.AssocList as M
 
@@ -73,8 +74,25 @@ hasTag s t = s `elem` tags t
 ticketExists :: String -> IO Bool
 ticketExists t = doesFileExist (ticketFilePath t)
 
+ticketGlobExists :: String -> IO Bool
+ticketGlobExists t = do
+  ef <- findTicket t
+  case ef of
+    Left  _ -> return False
+    Right _ -> return True
+
 checkTicketExists :: String -> IO ()
 checkTicketExists f = checkFileExists (ticketFilePath f)
+
+checkTicketGlobExists :: String -> IO ()
+checkTicketGlobExists t = do
+  ef <- findTicket t
+  case ef of
+    Left e  -> throwIO $ 
+                mkIOError doesNotExistErrorType 
+                   e
+                   Nothing (Just t)
+    Right _ -> return ()
 
 setOpen :: Bool -> Ticket -> Ticket
 setOpen v t = t{opened = v}
@@ -99,6 +117,7 @@ deleteTicket t = do
   when ex (removeFile (ticketFilePath t))
   return ex
 
+-- throws on failure.
 loadTicketFile :: FilePath -> IO Ticket
 loadTicketFile f = do
   contents <- readFileStrict f
@@ -114,4 +133,11 @@ allTickets = do
   fs <- getDirectoryContents nixdirname >>= filterM (\f -> isFile (nixdirname </> f))
   mapM loadTicket fs
 
+findTicket :: String -> IO (Either String Ticket)
+findTicket n = do
+  files <- globDir1 (compile ('*':n++"*")) nixdirname
+  case files of
+    []  -> return $ Left $ "No match found: " ++ n
+    [f] -> return . Right =<< loadTicketFile f
+    _   -> return $ Left "Ambiguous pattern used"
 

@@ -1,14 +1,13 @@
 module Tag
 where
 
-import Common
+import Helpers
 import Ticket
 
-tag :: String -> [String] -> IO ()
+tag :: Ticket -> [String] -> IO ()
 tag tick tgs = do
-  putStrLn $ "tag to: " ++ tick ++ " - " ++ (show tgs) ++ "."
-  from <- loadTicket tick
-  saveTicket (addTags tgs from)
+  putStrLn $ "tag to: " ++ title tick ++ " - " ++ (show tgs) ++ "."
+  saveTicket (addTags tgs tick)
 
 handleTag args = paramList tag args "tag" "Usage: tag ticket-name tag"
 

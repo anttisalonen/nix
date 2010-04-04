@@ -1,14 +1,13 @@
 module Comment
 where
 
-import Common
+import Helpers
 import Ticket
 
-comment :: String -> [String] -> IO ()
+comment :: Ticket -> [String] -> IO ()
 comment tick comms = do
-  putStrLn $ "Comment to: " ++ tick ++ " - " ++ (show comms) ++ "."
-  from <- loadTicket tick
-  addComments comms from >>= saveTicket
+  putStrLn $ "Comment to: " ++ title tick ++ " - " ++ (show comms) ++ "."
+  addComments comms tick >>= saveTicket
 
 handleComment args = paramList comment args "comment" "Usage: comment ticket-name comment"
 
