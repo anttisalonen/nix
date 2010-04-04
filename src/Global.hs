@@ -5,6 +5,7 @@ import System.Directory
 import Control.Exception (throwIO)
 import System.IO.Error (mkIOError, userErrorType, doesNotExistErrorType)
 import Prelude hiding (catch)
+import System.FilePath
 
 import Utils
 
@@ -15,7 +16,7 @@ globalconfigfile = do
   let globalconfigfilebase = "config"
   appdir <- getAppUserDataDirectory appName
   createDirectoryIfMissing False appdir
-  return $ appdir ++ "/" ++ globalconfigfilebase
+  return $ appdir </> globalconfigfilebase
 
 setGlobalName :: String -> IO ()
 setGlobalName n = do

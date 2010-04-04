@@ -13,6 +13,7 @@ import Comment
 import Tag
 import SetProp
 import Close
+import List
 
 commandHandlers :: [(Command, [String] -> IO ())]
 commandHandlers =
@@ -25,8 +26,6 @@ commandHandlers =
   , (Tag, handleTag)
   , (Close, handleClose)
   , (List, handleList)]
-
-handleList = error "list not supported yet"
 
 usage :: IO ()
 usage = do

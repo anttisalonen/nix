@@ -27,7 +27,7 @@ defaultAddOptions = AddOptions "" ""
 add :: AddOptions -> IO ()
 add opt = do
   checkIsInit
-  saveTicket (newTicket (addtitle opt) (addmessage opt))
+  newTicket (addtitle opt) (addmessage opt) >>= saveTicket
 
 handleAdd args = do
   (opts, nonopts) <- doArgs addOptions defaultAddOptions [] "add" args True
