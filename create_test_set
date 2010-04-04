@@ -36,4 +36,5 @@ dist/build/nix/nix set "disallow titles beginning with '.'" "difficulty" "fun"
 dist/build/nix/nix dep "general nix-stack-specific configuration" "disallow titles beginning with '.'"
 dist/build/nix/nix add "real test suite"
 dist/build/nix/nix add "setting tags, categories, deps etc. when adding a ticket"
+dist/build/nix/nix list
 
