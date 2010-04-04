@@ -83,6 +83,12 @@ saveTicket t =
 loadTicket :: String -> IO Ticket
 loadTicket = loadTicketFile . ticketFilePath
 
+deleteTicket :: String -> IO Bool
+deleteTicket t = do
+  ex <- ticketExists t
+  when ex (removeFile (ticketFilePath t))
+  return ex
+
 loadTicketFile :: FilePath -> IO Ticket
 loadTicketFile f = do
   contents <- readFileStrict f
