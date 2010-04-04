@@ -6,9 +6,6 @@ import System.Directory
 import System.IO.Error (mkIOError, userErrorType)
 import Control.Exception (throwIO)
 import Data.Time
-import System.Locale
-import Text.Printf
-import Data.List
 import System.FilePath
 
 import qualified Data.Edison.Assoc.AssocList as M
@@ -101,32 +98,4 @@ allTickets = do
   fs <- getDirectoryContents nixdirname >>= filterM (\f -> isFile (nixdirname </> f))
   mapM loadTicket fs
 
-displayOpen :: Bool -> String
-displayOpen True  = "open"
-displayOpen False = "closed"
-
-displayCategories :: M.FM String String -> String
-displayCategories = intercalate ":" . M.elements . M.mapWithKey (\k a -> printf "%s-%s" k a)
-
-displayMany :: [Ticket] -> String
-displayMany ts = "---\n" ++ intercalate "---\n" (map display ts)
-
-displayComments :: [Comment] -> String
-displayComments = concatMap (\(c, a, z) -> printf "comment (%s %s):\n%s\n" a (displayTime z) c)
-
-isFile :: FilePath -> IO Bool
-isFile = doesFileExist
-
-displayTime :: ZonedTime -> String
-displayTime = formatTime defaultTimeLocale rfc822DateFormat
-
-display :: Ticket -> String
-display t = intercalate "\n"
-  [ printf "%s (%s %s)" (title t) (displayTime $ createtime t) (creator t)
-  , displayOpen (opened t)
-  , displayCategories (categories t) 
-  , ""
-  , message t
-  , "" 
-  , displayComments (comments t) ]
 

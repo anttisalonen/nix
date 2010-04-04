@@ -3,6 +3,7 @@ where
 
 import qualified Data.ByteString.Char8 as Str
 import Control.Monad (liftM)
+import System.Directory
 
 safeRead :: (Read a) => String -> Maybe a
 safeRead s = case reads s of
@@ -12,4 +13,7 @@ safeRead s = case reads s of
 
 readFileStrict :: String -> IO String
 readFileStrict = liftM Str.unpack . Str.readFile
+
+isFile :: FilePath -> IO Bool
+isFile = doesFileExist
 
