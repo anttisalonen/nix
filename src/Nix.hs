@@ -14,18 +14,20 @@ import Tag
 import SetProp
 import Close
 import List
+import Remove
 
-commandHandlers :: [(Command, [String] -> IO ())]
-commandHandlers =
-   [(Config, handleConfig)
-  , (Init, handleInit)
-  , (Add, handleAdd)
-  , (Dep, handleDep)
-  , (Comment, handleComment)
-  , (SetProp, handleSetProp)
-  , (Tag, handleTag)
-  , (Close, handleClose)
-  , (List, handleList)]
+commands :: [(String, [String] -> IO ())]
+commands = 
+   [("config",  handleConfig)
+  , ("init",    handleInit)
+  , ("add",     handleAdd)
+  , ("remove",  handleRemove)
+  , ("dep",     handleDep)
+  , ("comment", handleComment)
+  , ("set",     handleSetProp)
+  , ("tag",     handleTag)
+  , ("close",   handleClose)
+  , ("list",    handleList)]
 
 usage :: IO ()
 usage = do
@@ -42,8 +44,5 @@ main = do
                else lookup (head args) commands
   case mcmd of
     Nothing -> usage
-    Just c  -> do
-      case lookup c commandHandlers of
-        Just h  -> h (tail args)
-        Nothing -> error "No handler setup"
+    Just h  -> h (tail args)
 

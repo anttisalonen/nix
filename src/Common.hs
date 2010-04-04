@@ -8,29 +8,6 @@ import Control.Monad (when)
 import System.Exit
 import System.Directory
 
-data Command = Config
-             | Init
-             | Add
-             | Dep
-             | Comment
-             | SetProp
-             | Tag
-             | Close
-             | List
-  deriving Eq
-
-commands :: [(String, Command)]
-commands = 
-   [("config",  Config)
-  , ("init",    Init)
-  , ("add",     Add)
-  , ("dep",     Dep)
-  , ("comment", Comment)
-  , ("set",     SetProp)
-  , ("tag",     Tag)
-  , ("close",   Close)
-  , ("list",    List)]
-
 isvalid :: [a -> Bool] -> a -> [Bool]
 isvalid []     _ = []
 isvalid (f:fs) v = f v : isvalid fs v
