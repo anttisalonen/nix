@@ -2,7 +2,7 @@ module Main
 where
 
 import Data.List (intercalate)
-import System (getArgs, getProgName)
+import System (getArgs)
 import Prelude hiding (catch)
 import Text.Printf (printf)
 
@@ -30,20 +30,19 @@ commands =
   , ("close",   ("close a ticket", handleClose))
   , ("list",    ("list tickets", handleList))]
 
-usage :: IO ()
-usage = do
-  n <- getProgName
-  putStrLn $ intercalate "\n" $
-   [ n ++ " cmd [args]",
+usageText :: String
+usageText = intercalate "\n" $
+   [ "cmd [args]",
      "available commands:" ] ++
      map (\(c, (h, _)) -> printf "    %-12s %s" c h) commands
 
 main = do
   args <- getArgs
+  handleDefaultArgs args usageText []
   let mcmd = if null args
                then Nothing
                else lookup (head args) commands
   case mcmd of
-    Nothing     -> usage
+    Nothing     -> putStrLn $ "nix " ++ usageText
     Just (_, h) -> h (tail args)
 

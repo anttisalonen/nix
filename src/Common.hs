@@ -8,6 +8,10 @@ import Control.Monad (when)
 import System.Exit
 import System.Directory
 
+import Paths_nix
+
+import Data.Version
+
 isvalid :: [a -> Bool] -> a -> [Bool]
 isvalid []     _ = []
 isvalid (f:fs) v = f v : isvalid fs v
@@ -40,9 +44,14 @@ handleInit _ = do
 -- exits.
 handleDefaultArgs args cmd opts = do
   when ("--help" `elem` args || "-h" `elem` args) $ cmdUsage cmd opts
+  when ("--version" `elem` args || "-v" `elem` args) $ versionExit
 
 -- exits.
-cmdUsage cmd opts = putStrLn (usageInfo ("nix " ++ cmd) opts) >> exitWith (ExitFailure 1)
+cmdUsage cmd opts = putStrLn (usageInfo ("nix " ++ cmd) opts) >> exitWith ExitSuccess
+
+-- exits.
+versionExit = do
+  putStrLn ("nix " ++ (showVersion version)) >> exitWith ExitSuccess
 
 -- throws error if not init.
 checkIsInit = do
