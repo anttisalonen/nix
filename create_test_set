@@ -4,6 +4,7 @@ rm -rf .nix
 dist/build/nix/nix init
 dist/build/nix/nix add "\"remove\" command"
 dist/build/nix/nix tag "\"remove\" command" "new-command"
+dist/build/nix/nix close "\"remove\" command"
 dist/build/nix/nix add "\"remove dependency\" -command"
 dist/build/nix/nix tag "\"remove dependency\" -command" "new-command"
 dist/build/nix/nix add "\"open\" -command"
@@ -35,6 +36,8 @@ dist/build/nix/nix add "disallow titles beginning with '.'"
 dist/build/nix/nix set "disallow titles beginning with '.'" "difficulty" "fun"
 dist/build/nix/nix dep "general nix-stack-specific configuration" "disallow titles beginning with '.'"
 dist/build/nix/nix add "real test suite"
+dist/build/nix/nix add "save date of last change of a ticket"
+dist/build/nix/nix add "save entire history of tickets"
 dist/build/nix/nix add "setting tags, categories, deps etc. when adding a ticket"
 dist/build/nix/nix list
 
