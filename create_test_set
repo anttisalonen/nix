@@ -1,0 +1,14 @@
+#!/bin/sh
+dist/build/nix/nix config -n "antti"
+dist/build/nix/nix add "ticket 2" -m "message #2"
+dist/build/nix/nix add abcd -m "message abcd"
+dist/build/nix/nix comment "abcd" "comment here"
+dist/build/nix/nix tag "ticket 2" "tag3" "tag4"
+dist/build/nix/nix tag abcd "tag2"
+dist/build/nix/nix tag "ticket 2" "tag3" "tag4"
+dist/build/nix/nix set "abcd" "category1" "foo"
+dist/build/nix/nix set "abcd" "category2" "catval2b"
+dist/build/nix/nix set "ticket 2" "category2" "catval2"
+dist/build/nix/nix set "ticket 2" "category1" "catval"
+dist/build/nix/nix dep abcd "ticket 2"
+dist/build/nix/nix close abcd
