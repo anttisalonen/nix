@@ -17,6 +17,7 @@ import Close
 import List
 import Remove
 import Descr
+import Graph
 
 commands :: [(String, (String, [String] -> IO ()))]
 commands = 
@@ -29,6 +30,7 @@ commands =
   , ("comment", ("add a comment to a ticket", handleComment))
   , ("set",     ("set a property of a ticket", handleSetProp))
   , ("tag",     ("tag a ticket", handleTag))
+  , ("graph",   ("draw a dependency graph", handleGraph))
   , ("close",   ("close a ticket", handleClose))
   , ("list",    ("list tickets", handleList))]
 

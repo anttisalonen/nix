@@ -135,9 +135,16 @@ allTickets = do
 
 findTicket :: String -> IO (Either String Ticket)
 findTicket n = do
-  files <- globDir1 (compile ('*':n++"*")) nixdirname
+  fn <- expandTicketGlob n
+  case fn of
+    Left e  -> return $ Left e
+    Right t -> return . Right =<< loadTicket t
+
+expandTicketGlob :: String -> IO (Either String String)
+expandTicketGlob t = do
+  files <- globDir1 (compile ('*':t ++ "*")) nixdirname
   case files of
-    []  -> return $ Left $ "No match found: " ++ n
-    [f] -> return . Right =<< loadTicketFile f
+    []  -> return $ Left $ "No match found: " ++ t
+    [f] -> return $ Right $ takeFileName f
     _   -> return $ Left "Ambiguous pattern used"
 

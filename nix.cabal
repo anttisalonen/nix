@@ -20,7 +20,8 @@ Executable nix
                    old-locale>=1.0.0.0,
                    time>=1.1.0,
                    filepath>=1.1.0.0,
-                   Glob>=0.5
+                   Glob>=0.5,
+                   fgl>=5.4.2.2
   Main-is:         Nix.hs
   Hs-Source-Dirs:  src
   Ghc-options:     -Wall -fno-warn-missing-signatures

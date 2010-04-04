@@ -6,9 +6,12 @@ import Ticket
 
 dep :: Ticket -> [String] -> IO ()
 dep from totitles = do
-  putStrLn $ "Dep from " ++ (title from) ++ " to " ++ (show totitles) ++ "."
-  mapM_ checkTicketExists totitles
-  saveTicket (modDeps (totitles ++) from)
+  fs <- mapM expandTicketGlob totitles
+  ticks <- checkAllRight fs usagemsg
+  putStrLn $ "Dep from " ++ (title from) ++ " to " ++ (show ticks) ++ "."
+  saveTicket (modDeps (ticks ++) from)
 
-handleDep args = paramList dep args "dep" "Usage: dep ticketname depends-on ..."
+usagemsg = "Usage: dep ticketname depends-on ..."
+
+handleDep args = paramList dep args "dep" usagemsg
 
